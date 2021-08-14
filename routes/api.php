@@ -18,9 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/ping',function(){
+    return ['pong' => true];
+});
 
 Route::get('/person','PersonController@all');
 Route::get('/person/{id}','PersonController@one');
 Route::post('/person','PersonController@new');
-Route::get('/person/{id}','PersonController@edit');
-Route::get('/person/{id}','PersonController@delete');
+Route::put('/person/{id}','PersonController@edit');
+Route::delete('/person/{id}','PersonController@delete');
