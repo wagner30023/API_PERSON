@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\person;
+use App\Models\Person;
 use Exception;
 
 class PersonController extends Controller
@@ -14,11 +14,11 @@ class PersonController extends Controller
         'result' => []
     ];
 
-    public function all(){
-        $person = person::all();
+    public function all()
+    {
+        $person = Person::all();
 
-        foreach($person as $persons)
-        {
+        foreach($person as $persons){
             $this->array['result'] [] = [
                 'id'        => $persons->id,
                 'firstname' => $persons->firstname,
@@ -32,10 +32,9 @@ class PersonController extends Controller
     public function one($id)
     {
         // $person = person::find($id);
-        $person = person::where('id', $id)->first();
+        $person = Person::where('id', $id)->first();
 
-        if(!$person)
-        {
+        if(!$person){
             $this->array['error'] = 'ID nao localizado';
         }
 
@@ -44,27 +43,25 @@ class PersonController extends Controller
         return $this->array;
     }
 
-    public function new(Request $request)
-    {
-            try{
-                $firstname = $request->input('firstname');
-                $lastname = $request->input('lastname');
-                $firstparent_id = $request->input('firstparent_id');
-                $secondparent_id = $request->input('secondparent_id');
+    public function new(Request $request){
+        try{
+            $firstname = $request->input('firstname');
+            $lastname = $request->input('lastname');
+            $firstparent_id = $request->input('firstparent_id');
+            $secondparent_id = $request->input('secondparent_id');
             
-                if(!$firstname && $lastname && $firstparent_id && $secondparent_id)
-                {
-                    throw new exception();
-                }
+            if(!($firstname || $lastname || $firstparent_id || $secondparent_id)){
+                throw new \exception();
+            }
+            
+            $person = new Person();
+            $person->firstname = $firstname;
+            $person->lastname = $lastname;
+            $person->firstparent_id = $firstparent_id;
+            $person->secondparent_id = $secondparent_id;
+            $person->save();
 
-                $person = new person();
-                $person->firstname = $firstname;
-                $person->lastname = $lastname;
-                $person->firstparent_id = $firstparent_id;
-                $person->secondparent_id = $secondparent_id;
-                $person->save();
-
-                $this->array['result'] = [
+            $this->array['result'] = [
                 'id' => $person->id,
                 'firstname' => $firstname,
                 'lastname' => $lastname
@@ -73,35 +70,34 @@ class PersonController extends Controller
             $this->array['result'] = 'Adicionado com successo';
             return $this->array;
         
-            } catch (Exception $e){
-                $this->array['error'] = 'campos nao adicionados';
-                $e->getmessage();
-            }
+        } catch (\Exception $e){
+            $this->array['error'] = $e->getmessage();
+        }
     }
 
-    public function edit(Request $request,$id){
+    public function edit(Request $request,$id)
+    {
         $firstname = $request->input('firstname');
         $lastname = $request->input('lastname');
 
-        if(!$firstname && $lastname)
-        {
+        if(!($firstname || $lastname)){
             $this->array['error'] = 'Campos nao atualizados';
         }
         
-        $person = person::find($id);
+        $person = Person::find($id);
         $person->update([
-                    'firstname' => $firstname,
-                    'lastname'  => $lastname
+            'firstname' => $firstname,
+            'lastname'  => $lastname
         ]);
 
         return $this->array['result'] = 'Atualizado com sucesso';
     }
 
-    public function delete($id){
-        $person = person::find($id);
+    public function delete($id)
+    {
+        $person = Person::find($id);
 
-        if(!$person)
-        {
+        if(!$person){
             $this->array['error'] = 'ID nao existe'; 
         }
 
